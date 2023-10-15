@@ -1,21 +1,7 @@
 var body = document.body;
 var score = 0;
-var i = 1;
-
-// creating list elements to push quiz question choices to
-var li1 = document.createElement("li");
-var li2 = document.createElement("li");
-var li3 = document.createElement("li");
-
-// Adding a class to the new list elements which I can use to query select
-li1.classList.add('option');
-li2.classList.add('option');
-li3.classList.add('option');
-
-// styling list elements so I can more easily see them when I go to click them
-li1.setAttribute("style", "Border-style:solid; background-color:lightgreen; padding:5px; margin:5px");
-li2.setAttribute("style", "Border-style:solid; background-color:lightgreen; padding:5px; margin:5px");
-li3.setAttribute("style", "Border-style:solid; background-color:lightgreen; padding:5px; margin:5px");
+var questionNumber = 0;
+var rightOrWrongBool;
 
 // setting up start button as a DOM event to kick off startQuiz function
 var startButton = document.querySelector(".start-button");
@@ -27,7 +13,7 @@ var prompt = document.querySelector("#prompt");
 // setting up query selector on entire options list, not being used currently
 var options = document.querySelector("#optionsList");
 
-
+var page = document.querySelector(".container");
 // Object array placeholder containing questions, choices and correct answers
 const questionsObjArr = [
     {
@@ -47,9 +33,6 @@ const questionsObjArr = [
     }
   ];
 
-// Simpler placeholder to reference in place of object array 
-//const questions = ["what's up", "how are you", "what's cookin good lookin"];
-
 // Setting up next button so it can be clicked. When it's clicked it instantiates nextQuestion function
 var nextButton = document.querySelector(".next-button");
 nextButton.addEventListener("click", nextQuestion);
@@ -58,6 +41,7 @@ nextButton.addEventListener("click", nextQuestion);
 function startQuiz() {
     score = 0;
     timerCount = 75;
+    var firstQuestion = questionsObjArr[0];
     // Prevents start button from being clicked when round is in progress
     // startButton.disabled = true;
     prompt.textContent = questionsObjArr[0].question;
@@ -65,17 +49,11 @@ function startQuiz() {
     startButton.style.display = "none";
     nextButton.style.display = "inline";
     
-    options.appendChild(li1);
-    options.appendChild(li2);
-    options.appendChild(li3);
-    
-    li1.textContent = questionsObjArr[0].choices[0];
-    li2.textContent = questionsObjArr[0].choices[1];
-    li3.textContent = questionsObjArr[0].choices[2];
+    // options.appendChild(li1);   
+    // li1.textContent = questionsObjArr[0].choices[0];
 
-    var selection = document.querySelector(".option");
-    selection.addEventListener("submit", console.log("nice choice"));
-
+    var selection = document.querySelectorAll(".option");
+    renderQuestion(firstQuestion);
 }
 
 // Timer function. Should start upon selecting 'Start' button and display in UI
@@ -96,54 +74,109 @@ function startTimer() {
     }, 7500);
 }
 
-// To be called either when timerCount === 0 or answered all questions 
-function endQuiz() {
-    // pass score to UI and display
-    // enter initials, save initials and score in local storage
-
-}
-
 // Renders first question upon starting game. Since I have separate buttons for start and next I had to set it up this way... at least I couldn't figure out how not to
-function renderQuestion() {
-    console.log(questions[i]);
-    startButton.remove();
+function renderQuestion(q) {
+    var currentQuestion = document.getElementById('liEl');
+    if (currentQuestion) {
+        currentQuestion.remove();
+    }
+    if (options) {
+        options.innerHTML = "";
+    }
+
+    prompt.textContent = q.question;
+        
+    // console.log("we are on question number: " + questionNumber);
+
+
+    q.choices.forEach((choice, index) => {
+        var li = document.createElement("li");
+        li.classList.add('option');
+        li.setAttribute('id','liEl' + index);
+        li.setAttribute("style", "Border-style:solid; background-color:lightgreen; padding:5px; margin:5px");
+        options.appendChild(li);
+        li.textContent = choice;
+
+        if (choice === q.answer) {
+            li.dataset.correct = true;
+        }
+        
+        // console.log(li);
+        
+        var clickableListEl = document.getElementById("liEl" + index);
+        clickableListEl.addEventListener("click", (event) => {
+            if (event.target.dataset.correct) {
+                score++;
+                
+                rightOrWrongBool = "Your last selection was correct!";
+            }
+            else {
+                rightOrWrongBool= "Bummer, your last selection was incorrect :(";
+            }
+            
+            var feedbackSection = document.getElementById("result-feedback");
+
+            if (!feedbackSection) {
+                var feedback = document.createElement("section");
+                feedback.setAttribute('id','result-feedback');
+                page.appendChild(feedback);
+
+                
+                var line = document.createElement("hr");
+                line.setAttribute('id','bottom-line');
+                feedback.appendChild(line);
+
+                var result = document.createElement("p");
+                result.setAttribute('id','correct-or-incorrect');
+                feedback.appendChild(result);
+                result.textContent = rightOrWrongBool;
+            }
+            else {
+                var result2 = document.getElementById("correct-or-incorrect");
+
+                result2.textContent = rightOrWrongBool;
+            }
+            
+            console.log(score);
+
+            nextQuestion();   
+        })
+    })
+
+}  
     
-    // Trying to setup choices as clickable and print to console "nice choice"
-    // Can't get options to be clickable, "nice choice" is printing to console upon start button click
-    var selection = document.querySelector(".option");
-    selection.addEventListener("click", function() {
-        console.log("nice choice")
-    });
-    
-}
+
 
 // called when I click "next button". Later will be called upon selecting a choice
 // replacing questions and choices content 
 // once we run out of questions, displaying "you've answered em all"
 function nextQuestion() {
-    responseCheck(questionsObjArr[i].answer);
-    console.log(score);
-    if (i > 2) {
-        prompt.textContent = "You've answered all my questions, good job!";
+    questionNumber++;
+    // console.log("nextQuestion function call. This happens before render Question");
+    // console.log("you're on index: " + questionNumber);
+   
+    if (questionNumber > questionsObjArr.length - 1) {
+        endQuiz();
         return;
     }
-    prompt.textContent = questionsObjArr[i].question;
-        
-    li1.textContent = questionsObjArr[i].choices[0];
-    li2.textContent = questionsObjArr[i].choices[1];
-    li3.textContent = questionsObjArr[i].choices[2];
-    
-    i++;
+    renderQuestion(questionsObjArr[questionNumber])
 }
 
-// Placeholder Responses
-var response1 = "green";
-var response2 = "good";
-var response3 = "Chicago";
+// To be called either when timerCount === 0 or answered all questions 
+function endQuiz() {
+    // pass score to UI and display
+    // enter initials, save initials and score in local storage
+    prompt.textContent = "All done!";
+    options.innerHTML = "";
 
-// check user selection (placeholder response for now) against questionsObjArr Answer
-function responseCheck(string) {
-    if (response1 === string /*questionsObjArr[i].answer*/) {
-        score++;
-    }
+    var li = document.createElement("h5");
+    li.classList.add('score-display');
+    // li.setAttribute('id','liEl' + index);
+    li.setAttribute("style", "background-color:lightblue; padding:5px; margin:5px");
+    options.appendChild(li);
+    li.textContent = "Final score is: " + score;
+
+    // set up initial entry field
+    // "Enter initials: " + text box + submit button
+    // submit button should save initials + score to local storage
 }
