@@ -1,7 +1,9 @@
+var timerElement = document.querySelector(".timer-count");
 var body = document.body;
 var score = 0;
 var questionNumber = 0;
 var rightOrWrongBool;
+var timerCount;
 
 // setting up start button as a DOM event to kick off startQuiz function
 var startButton = document.querySelector(".start-button");
@@ -40,12 +42,12 @@ nextButton.addEventListener("click", nextQuestion);
 // startQuiz function setup to be instantiated when I click 'Start'
 function startQuiz() {
     score = 0;
-    timerCount = 75;
+    timerCount = 10;
     var firstQuestion = questionsObjArr[0];
     // Prevents start button from being clicked when round is in progress
     // startButton.disabled = true;
     prompt.textContent = questionsObjArr[0].question;
-    // startTimer();
+    startTimer();
     startButton.style.display = "none";
     nextButton.style.display = "inline";
     
@@ -61,7 +63,6 @@ function startQuiz() {
 function startTimer() {
     // Sets timer
     timer = setInterval(function() {
-        // timerCount = 75;
         timerCount--;
         timerElement.textContent = timerCount;
         
@@ -71,7 +72,7 @@ function startTimer() {
         clearInterval(timer);
         endQuiz();
         }
-    }, 7500);
+    }, 1000);
 }
 
 // Renders first question upon starting game. Since I have separate buttons for start and next I had to set it up this way... at least I couldn't figure out how not to
