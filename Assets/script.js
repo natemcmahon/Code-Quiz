@@ -1,4 +1,9 @@
 var timerElement = document.querySelector(".timer-count");
+var initialsPrompt = document.querySelector(".initials");
+var submitButton = document.querySelector("#initial-submit");
+var initialsInput = document.querySelector("#initial-text");
+var initialsForm = document.querySelector("#initial-form");
+// var feedbackSection = document.querySelector("#result-feedback");
 var body = document.body;
 var score = 0;
 var questionNumber = 0;
@@ -17,6 +22,10 @@ var options = document.querySelector("#optionsList");
 
 var page = document.querySelector(".container");
 // Object array placeholder containing questions, choices and correct answers
+
+// event listener for initial submit button
+submitButton.addEventListener("click", storeHighScore);
+
 const questionsObjArr = [
     {
         question: "what's your favorite color?",
@@ -36,7 +45,7 @@ const questionsObjArr = [
   ];
 
 // Setting up next button so it can be clicked. When it's clicked it instantiates nextQuestion function
-var nextButton = document.querySelector(".next-button");
+var nextButton = document.querySelector(".advance-button");
 nextButton.addEventListener("click", nextQuestion);
 
 // startQuiz function setup to be instantiated when I click 'Start'
@@ -105,6 +114,7 @@ function renderQuestion(q) {
         // console.log(li);
         
         var clickableListEl = document.getElementById("liEl" + index);
+
         clickableListEl.addEventListener("click", (event) => {
             if (event.target.dataset.correct) {
                 score++;
@@ -115,7 +125,7 @@ function renderQuestion(q) {
                 rightOrWrongBool= "Bummer, your last selection was incorrect :(";
             }
             
-            var feedbackSection = document.getElementById("result-feedback");
+            feedbackSection = document.getElementById("result-feedback");
 
             if (!feedbackSection) {
                 var feedback = document.createElement("section");
@@ -145,8 +155,6 @@ function renderQuestion(q) {
     })
 
 }  
-    
-
 
 // called when I click "next button". Later will be called upon selecting a choice
 // replacing questions and choices content 
@@ -165,6 +173,9 @@ function nextQuestion() {
 
 // To be called either when timerCount === 0 or answered all questions 
 function endQuiz() {
+    // Clears interval
+    clearInterval(timer);
+    
     // pass score to UI and display
     // enter initials, save initials and score in local storage
     prompt.textContent = "All done!";
@@ -177,7 +188,54 @@ function endQuiz() {
     options.appendChild(li);
     li.textContent = "Final score is: " + score;
 
+    nextButton.style.display = "none";
     // set up initial entry field
     // "Enter initials: " + text box + submit button
     // submit button should save initials + score to local storage
+    initialsPrompt.style.display = "inline";
+    console.log("made it here");
+    
+    
+}
+
+function storeHighScore(event) {
+    event.preventDefault();
+
+    prompt.textContent = "High Scores:";
+    options.innerHTML = "";
+    initialsForm.style.display = "none";
+    
+    // feedbackSection.style.display = "none";
+
+    console.log("User " + initialsInput.value + " scored " + score + " points");
+    var highScoresObj = [
+        {
+            user: "",
+            highScore: ""
+        }
+    ];
+    var recentScoreObj = [
+        {
+            user: initialsInput.value,
+            highScore: score
+        }
+    ];
+
+    // push latest high score to array of key value pairs containing initials:score
+    
+    highScoresObj.push(recentScoreObj);
+    console.log(highScoresObj);
+
+    localStorage.setItem("highScoresObjectArray", highScoresObj);
+    
+
+    var storedScores = localStorage.getItem("highScoresObjectArray");
+
+    var scoresTable = document.createElement("h5");
+    page.appendChild(scoresTable);
+    scoresTable.textContent = storedScores;
+
+    // still need to figure out how to print this list to html
+    // ideally I would have a max size of 10, sort them by highest score, only display top 10 scores
+
 }

@@ -1,6 +1,20 @@
 .start-button {
     display: inline;
 }
-.next-button {
+.advance-button {
     display: none;
+    margin-top: 20px;
+}
+
+.initials {
+    display: none;
+    padding-left: 45px;
+}
+
+#initial-submit {
+    margin: 5px;
+}
+
+#result-feedback {
+    display: inline;
 }
