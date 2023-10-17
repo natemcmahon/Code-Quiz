@@ -31,19 +31,19 @@ scoresButton.addEventListener("click", loadHighScores);
 
 const questionsObjArr = [
     {
-        question: "what's your favorite color?",
-        choices: ["blue", "green", "red", "yellow"],
-        answer: "green"
+        question: "Commonly used data types DO NOT include?",
+        choices: ["strings", "booleans", "alerts", "numbers"],
+        answer: "alerts"
     },
     {
-        question: "how is your day going?",
-        choices: ["good", "okay", "bad"],
-        answer: "good"
+        question: "The condition in an if/else statement is enclosed within _______?",
+        choices: ["quotes", "curly brackets", "parenthesis", "square brackets"],
+        answer: "parenthesis"
     },
     {
-        question: "where are you from?",
-        choices: ["Kansas City", "Chicago", "India"],
-        answer: "Chicago"
+        question: "Arrays in Javascript can be used to store?",
+        choices: ["numbers and strings", "other arrays", "booleans", "all of the above"],
+        answer: "all of the above"
     }
   ];
 
