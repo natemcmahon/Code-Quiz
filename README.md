@@ -7,3 +7,4 @@ My Quiz is designed as a study material to help me stay review concepts I learn 
 ## Usage
 
 My Javascript Concepts Quiz can be accessed at:
+https://natemcmahon.github.io/Code-Quiz/
